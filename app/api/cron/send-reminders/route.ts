@@ -10,6 +10,7 @@
 import type { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { EMAIL_FROM, getResend } from "@/lib/resend";
+import { formatDateTime, startOfTodayBangkok } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -26,13 +27,11 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: "RESEND_API_KEY not configured" }, { status: 500 });
   }
 
-  // "Tomorrow" in the server's local time. pickupAt values are parsed and
-  // displayed with server-local time throughout the app, so the same clock
-  // is used here. The cron is scheduled at 02:00 UTC (= 09:00 Thailand),
-  // when the UTC date and the Thai date are the same day.
-  const now = new Date();
-  const startOfTomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-  const endOfTomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
+  // "Tomorrow" as a Thai calendar day, expressed as real instants —
+  // correct no matter what timezone the server runs in.
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const startOfTomorrow = new Date(startOfTodayBangkok().getTime() + DAY_MS);
+  const endOfTomorrow = new Date(startOfTomorrow.getTime() + DAY_MS);
 
   const records = await prisma.borrowRecord.findMany({
     where: {
@@ -48,10 +47,7 @@ export async function GET(request: NextRequest) {
   const failures: string[] = [];
 
   for (const record of records) {
-    const pickupText = record.pickupAt!.toLocaleString("th-TH", {
-      dateStyle: "full",
-      timeStyle: "short",
-    });
+    const pickupText = formatDateTime(record.pickupAt); // Thai time
     const radioText = record.radio.model
       ? `${record.radio.code} (${record.radio.model})`
       : record.radio.code;

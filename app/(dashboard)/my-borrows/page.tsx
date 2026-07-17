@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import BorrowStatusBadge from "@/components/borrows/BorrowStatusBadge";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { formatDate, isOverdue } from "@/lib/utils";
+import { formatDate, formatDateTime, isOverdue } from "@/lib/utils";
 import { returnBorrow } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -83,7 +83,7 @@ export default async function MyBorrowsPage({
                     </h2>
                     <dl className="mt-2 space-y-1 text-sm text-gray-600">
                       <div>ยื่นคำขอ: {formatDate(record.requestedAt)}</div>
-                      {record.pickupAt && <div>นัดรับเครื่อง: {formatDate(record.pickupAt)}</div>}
+                      {record.pickupAt && <div>นัดรับเครื่อง: {formatDateTime(record.pickupAt)}</div>}
                       <div>กำหนดคืน: {formatDate(record.dueAt)}</div>
                       {record.returnedAt && <div>คืนเมื่อ: {formatDate(record.returnedAt)}</div>}
                       {record.returnNote && <div>หมายเหตุ: {record.returnNote}</div>}

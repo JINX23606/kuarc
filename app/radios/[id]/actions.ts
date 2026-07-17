@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { parseBangkok, startOfTodayBangkok } from "@/lib/utils";
 
 export async function requestBorrow(formData: FormData) {
   // Auth check happens HERE (server-side), not just in the UI.
@@ -18,14 +19,12 @@ export async function requestBorrow(formData: FormData) {
   const radioId = String(formData.get("radioId") ?? "");
   const dueAtRaw = String(formData.get("dueAt") ?? "");
 
-  const dueAt = new Date(dueAtRaw);
+  const dueAt = parseBangkok(dueAtRaw); // <input type="date">, Thai time
   if (!radioId || !dueAtRaw || isNaN(dueAt.getTime())) {
     redirect(`/radios/${radioId}?error=invalid`);
   }
-  // Due date must be in the future (compare against start of today).
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  if (dueAt < today) {
+  // Due date must be today or later (Thai calendar day).
+  if (dueAt < startOfTodayBangkok()) {
     redirect(`/radios/${radioId}?error=past-due`);
   }
 

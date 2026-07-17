@@ -5,6 +5,7 @@
 
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { parseBangkok, startOfTodayBangkok } from "@/lib/utils";
 
 export async function createExternalRequest(formData: FormData) {
   const radioId = String(formData.get("radioId") ?? "");
@@ -15,13 +16,11 @@ export async function createExternalRequest(formData: FormData) {
   const dueAtRaw = String(formData.get("dueAt") ?? "");
 
   // Basic validation — the form has `required` too, but never trust the client.
-  const dueAt = new Date(dueAtRaw);
+  const dueAt = parseBangkok(dueAtRaw); // <input type="date">, Thai time
   if (!externalName || !externalOrg || !externalContact || !email || !radioId || isNaN(dueAt.getTime())) {
     redirect(`/borrow-request?radio=${radioId}&error=invalid`);
   }
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  if (dueAt < today) {
+  if (dueAt < startOfTodayBangkok()) {
     redirect(`/borrow-request?radio=${radioId}&error=past-due`);
   }
 

@@ -8,7 +8,7 @@ import BorrowStatusBadge from "@/components/borrows/BorrowStatusBadge";
 import StatsCard from "@/components/dashboard/StatsCard";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatDateTime } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -151,7 +151,7 @@ export default async function DashboardPage() {
                   )}
                 </p>
                 <p className="mt-1 text-gray-500">
-                  นัดรับ {formatDate(record.pickupAt)} · กำหนดคืน {formatDate(record.dueAt)}
+                  นัดรับ {formatDateTime(record.pickupAt)} · กำหนดคืน {formatDate(record.dueAt)}
                 </p>
               </div>
             ))}

@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { parseBangkok } from "@/lib/utils";
 
 // Refresh every page whose data this queue touches.
 function revalidateBorrowPages() {
@@ -23,7 +24,7 @@ export async function approveBorrow(formData: FormData) {
   const recordId = String(formData.get("recordId") ?? "");
   const pickupAtRaw = String(formData.get("pickupAt") ?? "");
 
-  const pickupAt = new Date(pickupAtRaw); // from <input type="datetime-local">
+  const pickupAt = parseBangkok(pickupAtRaw); // <input type="datetime-local">, Thai time
   if (!recordId || !pickupAtRaw || isNaN(pickupAt.getTime())) {
     redirect("/admin/borrows?error=invalid-pickup");
   }

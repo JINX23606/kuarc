@@ -5,7 +5,7 @@
 import BorrowStatusBadge from "@/components/borrows/BorrowStatusBadge";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { formatDate, isOverdue } from "@/lib/utils";
+import { formatDate, formatDateTime, isOverdue } from "@/lib/utils";
 import { approveBorrow, markReturned, rejectBorrow } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -200,7 +200,7 @@ export default async function AdminBorrowsPage({
                       </p>
                       <p className="mt-1 text-gray-700">{borrowerInfo(record)}</p>
                       <p className="mt-1 text-gray-500">
-                        นัดรับ {formatDate(record.pickupAt)} · กำหนดคืน {formatDate(record.dueAt)}
+                        นัดรับ {formatDateTime(record.pickupAt)} · กำหนดคืน {formatDate(record.dueAt)}
                       </p>
                     </div>
                     <BorrowStatusBadge status={overdue ? "OVERDUE" : "APPROVED"} />

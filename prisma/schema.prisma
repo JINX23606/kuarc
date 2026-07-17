@@ -1,0 +1,136 @@
+// RadioTrack — Prisma schema (per CLAUDE.md)
+// Prisma 7 note: the database connection URL is NOT set here anymore.
+// - CLI/migrations read it from prisma.config.ts (which loads .env)
+// - The app passes a driver adapter to PrismaClient in lib/prisma.ts
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --------------------------------------
+// Enums
+// --------------------------------------
+
+enum Role {
+  MEMBER
+  ADMIN
+}
+
+enum BorrowerType {
+  MEMBER // logged-in club member
+  EXTERNAL // outside borrower, no account (uses /borrow-request form)
+}
+
+enum BorrowStatus {
+  PENDING
+  APPROVED
+  RETURNED
+  REJECTED
+  OVERDUE
+}
+
+enum RadioStatus {
+  AVAILABLE
+  BORROWED
+  MAINTENANCE
+}
+
+// --------------------------------------
+// App models
+// --------------------------------------
+
+model User {
+  id            String         @id @default(cuid())
+  name          String?
+  email         String?        @unique
+  emailVerified DateTime?
+  image         String?
+  studentId     String?
+  phone         String?
+  role          Role           @default(MEMBER)
+  accounts      Account[]
+  sessions      Session[]
+  borrowRecords BorrowRecord[]
+  createdAt     DateTime       @default(now())
+}
+
+model Radio {
+  id            String         @id @default(cuid())
+  code          String         @unique // e.g. R001
+  model         String?
+  status        RadioStatus    @default(AVAILABLE)
+  note          String?
+  createdAt     DateTime       @default(now())
+  borrowRecords BorrowRecord[]
+}
+
+model BorrowRecord {
+  id      String @id @default(cuid())
+  radioId String
+  radio   Radio  @relation(fields: [radioId], references: [id])
+
+  borrowerType    BorrowerType @default(MEMBER)
+  userId          String?
+  user            User?        @relation(fields: [userId], references: [id])
+  externalName    String?
+  externalOrg     String?
+  externalContact String?
+  email           String? // reminder target — from User or form
+
+  status      BorrowStatus @default(PENDING)
+  requestedAt DateTime     @default(now())
+  pickupAt    DateTime? // scheduled pickup appointment
+  dueAt       DateTime?
+  returnedAt  DateTime?
+  returnNote  String?
+
+  reminderSent Boolean @default(false)
+}
+
+// --------------------------------------
+// NextAuth (Auth.js) adapter models
+// Standard schema from the @auth/prisma-adapter docs.
+// --------------------------------------
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}

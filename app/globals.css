@@ -1,26 +1,20 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * The site is designed light-only: pages assume a light background
+ * (bg-gray-50 body, white cards, gray-900 headings). The create-next-app
+ * boilerplate that used to live here flipped the body background to
+ * near-black when the OS is in dark mode — and because that body rule was
+ * unlayered CSS, it overrode the Tailwind `bg-gray-50` class on <body>,
+ * making dark headings unreadable. Keep body background/color to Tailwind
+ * utilities in app/layout.tsx; don't reintroduce a body background here.
+ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }

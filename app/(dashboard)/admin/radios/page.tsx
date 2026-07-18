@@ -127,7 +127,7 @@ export default async function AdminRadiosPage({
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm font-semibold text-gray-900">
                     {radio.code}
-                    <span className="ml-2 text-xs font-normal text-gray-400">
+                    <span className="ml-2 text-xs font-normal text-gray-500">
                       ยืมไปแล้ว {radio._count.borrowRecords} ครั้ง
                     </span>
                   </p>

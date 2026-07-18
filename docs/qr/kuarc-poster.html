@@ -1,0 +1,201 @@
+<title>ป้าย QR — KUARC RadioTrack</title>
+<style>
+  :root {
+    --ku-green: #00594F;
+    --ku-green-soft: #E4EEEB;
+    --paper: #FBFBF8;
+    --ink: #17201D;
+    --muted: #5A6B66;
+    --rule: #D8DED9;
+    --ground: #EFF1EE;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ground: #121715; }
+  }
+  :root[data-theme="dark"] { --ground: #121715; }
+  :root[data-theme="light"] { --ground: #EFF1EE; }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ground);
+    font-family: "Leelawadee UI", "Segoe UI", Tahoma, "Noto Sans Thai", sans-serif;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 48px;
+    gap: 20px;
+  }
+
+  /* The sheet is a physical printed page — it stays paper-white in both themes. */
+  .sheet {
+    position: relative;
+    background: var(--paper);
+    width: 100%;
+    max-width: 720px;
+    padding: 56px 64px 44px;
+    box-shadow: 0 2px 24px rgba(23, 32, 29, 0.18);
+    overflow: hidden;
+  }
+
+  /* Radio-wave motif: quarter arcs radiating from the top-right corner */
+  .waves { position: absolute; top: 0; right: 0; width: 240px; height: 240px; pointer-events: none; }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ku-green);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .eyebrow::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+
+  h1 {
+    font-size: 44px;
+    line-height: 1.25;
+    font-weight: 800;
+    margin: 28px 0 6px;
+    text-wrap: balance;
+  }
+  h1 .accent { color: var(--ku-green); }
+
+  .sub { font-size: 18px; color: var(--muted); margin: 0 0 36px; max-width: 34em; }
+
+  .qr-block { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 0 0 40px; }
+  .qr-frame {
+    border: 2px solid var(--ku-green);
+    padding: 14px;
+    background: #FFFFFF; /* QR quiet zone must stay pure white */
+  }
+  .qr-frame img { display: block; width: 232px; height: 232px; image-rendering: pixelated; }
+  .url {
+    font-family: Consolas, Menlo, monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ku-green);
+    letter-spacing: 0.02em;
+  }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 36px; }
+  .step { display: flex; flex-direction: column; gap: 6px; }
+  .step .num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--ku-green);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step .t { font-weight: 700; font-size: 16px; }
+  .step .d { font-size: 14px; color: var(--muted); line-height: 1.55; }
+
+  .note {
+    background: var(--ku-green-soft);
+    border-left: 3px solid var(--ku-green);
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink);
+    margin-bottom: 36px;
+  }
+  .note b { color: var(--ku-green); }
+
+  .foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-top: 1px solid var(--rule);
+    padding-top: 16px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .foot .club { font-weight: 700; color: var(--ink); }
+
+  .print-btn {
+    border: none;
+    background: var(--ku-green);
+    color: #fff;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 10px 26px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .print-btn:hover { background: #00473F; }
+  .print-btn:focus-visible { outline: 3px solid #7FB8AE; outline-offset: 2px; }
+  .hint { font-size: 13px; color: var(--muted); max-width: 40em; text-align: center; }
+
+  @media (max-width: 640px) {
+    .sheet { padding: 36px 28px 32px; }
+    h1 { font-size: 32px; }
+    .steps { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    @page { size: A4 portrait; margin: 0; }
+    body { background: #fff; padding: 0; display: block; }
+    .sheet { max-width: none; min-height: 100vh; box-shadow: none; padding: 20mm 22mm; }
+    .print-btn, .hint { display: none; }
+  }
+</style>
+
+<div class="sheet">
+  <svg class="waves" viewBox="0 0 240 240" aria-hidden="true">
+    <g fill="none" stroke="#00594F" stroke-width="1.5">
+      <circle cx="240" cy="0" r="60"  opacity="0.28"/>
+      <circle cx="240" cy="0" r="105" opacity="0.20"/>
+      <circle cx="240" cy="0" r="150" opacity="0.13"/>
+      <circle cx="240" cy="0" r="195" opacity="0.07"/>
+    </g>
+    <circle cx="240" cy="0" r="7" fill="#00594F" opacity="0.5"/>
+  </svg>
+
+  <div class="eyebrow">KUARC · RadioTrack</div>
+
+  <h1>ยืมวิทยุสื่อสาร<br><span class="accent">สแกนเดียวจบ ไม่ต้องทักไลน์</span></h1>
+  <p class="sub">ระบบยืม–คืนวิทยุสื่อสารออนไลน์ของชมรมวิทยุสมัครเล่น มหาวิทยาลัยเกษตรศาสตร์ — ดูเครื่องว่างและส่งคำขอยืมได้ด้วยตัวเอง ตลอด 24 ชั่วโมง</p>
+
+  <div class="qr-block">
+    <div class="qr-frame">
+      <img src="data:image/png;base64,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" alt="QR code ไปยัง kuarc.vercel.app">
+    </div>
+    <div class="url">kuarc.vercel.app</div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="num">1</div>
+      <div class="t">สแกน QR</div>
+      <div class="d">เปิดกล้องมือถือ สแกนโค้ดด้านบน หรือพิมพ์ kuarc.vercel.app ในเบราว์เซอร์</div>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <div class="t">เลือกเครื่องที่ว่าง</div>
+      <div class="d">ดูรายการวิทยุและสถานะได้ทันที ไม่ต้องสมัครสมาชิก ไม่ต้องล็อกอิน</div>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <div class="t">ส่งคำขอยืม</div>
+      <div class="d">กรอกฟอร์มสั้น ๆ กรรมการชมรมจะติดต่อกลับเพื่อนัดรับเครื่อง</div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>สมาชิกชมรม:</b> เข้าสู่ระบบด้วยบัญชี Google (@ku.th หรือ Gmail) เพื่อยืมและดูประวัติของตัวเอง &nbsp;·&nbsp;
+    <b>บุคคลภายนอก / ชมรมอื่น:</b> ใช้ฟอร์มขอยืมได้เลย ไม่ต้องมีบัญชี
+  </div>
+
+  <div class="foot">
+    <span class="club">ชมรมวิทยุสมัครเล่น มหาวิทยาลัยเกษตรศาสตร์ (KUARC)</span>
+    <span>kuarc.vercel.app</span>
+  </div>
+</div>
+
+<button class="print-btn" onclick="window.print()">พิมพ์ป้ายนี้ (A4)</button>
+<p class="hint">กดปุ่มด้านบนเพื่อพิมพ์ขนาด A4 — เหมาะสำหรับติดหน้าห้องชมรม บอร์ดประชาสัมพันธ์ หรือส่งต่อในไลน์กลุ่ม</p>

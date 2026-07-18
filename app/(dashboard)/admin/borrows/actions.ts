@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { reminderWindowEnd, sendPickupReminder } from "@/lib/reminders";
 import { parseBangkok } from "@/lib/utils";
 
 // Refresh every page whose data this queue touches.
@@ -51,6 +52,22 @@ export async function approveBorrow(formData: FormData) {
       data: { status: "BORROWED" },
     }),
   ]);
+
+  // If the pickup is already today or tomorrow, the daily 09:00 cron has
+  // either run already or would arrive too late — send the reminder now.
+  // Best-effort: a failed email must not undo the approval.
+  const now = new Date();
+  if (record.email && pickupAt >= now && pickupAt < reminderWindowEnd()) {
+    const failure = await sendPickupReminder({
+      id: record.id,
+      email: record.email,
+      pickupAt,
+      radio: record.radio,
+    });
+    if (failure) {
+      console.error(`pickup reminder failed for ${record.id}: ${failure}`);
+    }
+  }
 
   revalidateBorrowPages();
   redirect("/admin/borrows?approved=1");
